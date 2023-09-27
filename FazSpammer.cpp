@@ -1,25 +1,51 @@
-
-#include<clipboard.hpp>
 #include<iostream>
 #include<clocale>
 #include<ConsoleColor.h>
+#include<windows.h>
+void CopyToClipboard(const std::string &text) {
+    if (OpenClipboard(nullptr)) {
+        EmptyClipboard();
+        // Metni clipboard'e kopyala
+        HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, (text.length() + 1) * sizeof(char));
+        if (hMem != nullptr) {
+            char *memData = static_cast<char *>(GlobalLock(hMem));
+            if (memData != nullptr) {
+                strncpy(memData, text.c_str(), text.length() + 1);
+                GlobalUnlock(hMem);
+
+                if (SetClipboardData(CF_TEXT, hMem) != nullptr) {
+                    ;
+                } else {
+                    std::cerr << "Clipboard'e metin kopyalanirken bir hata olustu." << std::endl;
+                }
+            }
+
+            GlobalFree(hMem);
+        } else {
+            std::cerr << "Clipboard icin bellek tahsisi yapilamadi." << std::endl;
+        }
+
+        CloseClipboard();
+    } else {
+        std::cerr << "Clipboard acilamadi." << std::endl;
+    }
+}
 using namespace std;
 
 int main(int argc, char** argv){
 	setlocale(LC_ALL,"Turkish");
 	
 	for(;;){
-		cout<<green<<"\nClock killer spammera hoþgeldiniz!"<<endl<<blue<<"\nFazbear Entertainment tarafýndan kodlanmýþtýr.."<<endl<<endl;
-	    clipboardxx::clipboard copy;
+		cout<<green<<"\nClock killer spammera hoÅŸgeldiniz!"<<endl<<blue<<"\nFazbear Entertainment tarafÄ±ndan kodlanmÄ±ÅŸtÄ±r.."<<endl<<endl;
 		string *spammessage=new string;
 		cout<<endl<<yellow;
-		cout<<"[+]Spam mesajýný yazýnýz :";
+		cout<<"[+]Spam mesajÄ±nÄ± yazÄ±nÄ±z :";
 		getline(cin,*spammessage);
 		
-		copy<<*spammessage;
+		CopyToClipboard(*spammessage);
 		
 		short int *num=new short int;
-		cout<<green<<"\n[+]Spam sayýsýný giriniz :";
+		cout<<green<<"\n[+]Spam sayÄ±sÄ±nÄ± giriniz :";
 		cin>>*num;
 		if(*num<=1500){
 			short int *j=new short int;
@@ -29,7 +55,7 @@ int main(int argc, char** argv){
 			cout<<endl;
 			for(*counter<4; *counter=*counter+1;){
 				*j=*j-1;
-			   	cout<<red<<"[+]Spamlamanýn baþlamasýna "<<*j<<" saniye kaldý!"<<endl;
+			   	cout<<red<<"[+]SpamlamanÄ±n baÅŸlamasÄ±na "<<*j<<" saniye kaldÄ±!"<<endl;
 			   	Sleep(1000);
 			   	if(*j==0){
 			   		delete j,counter;
@@ -46,7 +72,7 @@ int main(int argc, char** argv){
 				keybd_event(VK_RETURN, 0x9C, KEYEVENTF_KEYUP, 0);
 			}
 			delete sp,num,spammessage;
-			cout<<white<<"\n\nClock Killer spamlama bitmiþtir.\n\a"<<green;
+			cout<<white<<"\n\nClock Killer spamlama bitmiÅŸtir.\n\a"<<green;
 			Sleep(1000);
 			break;
 		}
@@ -54,7 +80,7 @@ int main(int argc, char** argv){
 			break;
 		}
 		else{
-			cerr<<endl<<yellow<<"[-]Max 1500 deðer girebilirsin..!"<<endl;
+			cerr<<endl<<yellow<<"[-]Max 1500 deÄŸer girebilirsin..!"<<endl;
 			continue;
 		}
 	}
